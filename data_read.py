@@ -3,8 +3,9 @@
 import os
 import numpy as np
 import tensorflow as tf
+import cv2
 
-#input the root path of the pic, return all pics in the folder
+#读取整个dict下的所有文件，得到文件路径
 def Read(dict):
     data = []
     label = []
@@ -21,8 +22,8 @@ def Read(dict):
 
 
 def allDataGet():
-    p_dict = 'D:\pyworkplace\FaceIdentification\p\\'
-    z_dict = 'D:\pyworkplace\FaceIdentification\z\\'
+    p_dict = 'D:\pyworkplace\FaceIdentification\pp\\'
+    z_dict = 'D:\pyworkplace\FaceIdentification\zz\\'
 
     p_data, p_label = Read(p_dict)
     z_data, z_label = Read(z_dict)
@@ -39,11 +40,7 @@ def allDataGet():
 
     return data, label
 
-
-#输入一张图片，返回其中人脸区域
-def img_get_face(img):
-
-def get_batch(image, label, image_w, image_h, batch_size, capicity):
+def get_batch(image, label, image_w, image_h, batch_size, capacity):
     tf.cast(image, tf.float32)
     tf.cast(label, tf.int32)
 
@@ -59,10 +56,27 @@ def get_batch(image, label, image_w, image_h, batch_size, capicity):
     image_batch, label_batch = tf.train.batch([image, label],
                                               batch_size = batch_size,
                                               num_threads=32,
-                                              capacity= capicity)
+                                              capacity= capacity)
 
     image_batch = tf.cast(image_batch, tf.float32)
     label_batch = tf.reshape(label_batch, [batch_size])
 
     return image_batch, label_batch
 
+
+def image_get_face(filepath):
+    #使用opencv训练好的人脸检测数据集，分辨率高的图片识别率较高
+    face_cascade = cv2.CascadeClassifier(
+        r'D:\pyworkplace\FaceIdentification\opencv-master\data\haarcascades\haarcascade_frontalface_default.xml')
+
+    image = cv2.imread(filepath)
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    faces = face_cascade.detectMultiScale(gray, 1.15, 5)
+
+    for (x, y, w, h) in faces:
+        return gray[x:x+w, y:y+h]   #返回人脸区域
+
+    return None
+
+
+image_get_face('D:\pyworkplace\FaceIdentification\p\img.jpg')
