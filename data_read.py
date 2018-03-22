@@ -13,7 +13,7 @@ def Read(dict):
     for file in os.listdir(dict):
 
         data.append(dict + file)
-        if 'p' in file:
+        if 'pp' in dict:
             label.append(0)
         else:
             label.append(1)
@@ -40,6 +40,18 @@ def allDataGet():
 
     return data, label
 
+# def get_image_label(data, label, image_w, image_h) :
+#
+#     input_queue = tf.train.slice_input_producer([data, label], shuffle=False)
+#     image_content = tf.read_file(input_queue[0])
+#     image = tf.image.decode_png(image_content, channels=3)
+#     image = tf.image.resize_image_with_crop_or_pad(image, image_h, image_w)
+#     image = tf.image.per_image_standardization(image)
+#
+#     return image , input_queue[1]
+
+
+
 def get_batch(image, label, image_w, image_h, batch_size, capacity):
     tf.cast(image, tf.float32)
     tf.cast(label, tf.int32)
@@ -63,20 +75,20 @@ def get_batch(image, label, image_w, image_h, batch_size, capacity):
 
     return image_batch, label_batch
 
+#
+# def image_get_face(filepath):
+#     #使用opencv训练好的人脸检测数据集，分辨率高的图片识别率较高
+#     face_cascade = cv2.CascadeClassifier(
+#         r'D:\pyworkplace\FaceIdentification\opencv-master\data\haarcascades\haarcascade_frontalface_default.xml')
+#
+#     image = cv2.imread(filepath)
+#     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+#     faces = face_cascade.detectMultiScale(gray, 1.15, 5)
+#
+#     for (x, y, w, h) in faces:
+#         gray =  gray[x:x+w, y:y+h]   #返回人脸区域
+#         gray = cv2.resize(gray, [64, 64])
+#         return tf.Variable(image)
+#
+#     return None
 
-def image_get_face(filepath):
-    #使用opencv训练好的人脸检测数据集，分辨率高的图片识别率较高
-    face_cascade = cv2.CascadeClassifier(
-        r'D:\pyworkplace\FaceIdentification\opencv-master\data\haarcascades\haarcascade_frontalface_default.xml')
-
-    image = cv2.imread(filepath)
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    faces = face_cascade.detectMultiScale(gray, 1.15, 5)
-
-    for (x, y, w, h) in faces:
-        return gray[x:x+w, y:y+h]   #返回人脸区域
-
-    return None
-
-
-image_get_face('D:\pyworkplace\FaceIdentification\p\img.jpg')
