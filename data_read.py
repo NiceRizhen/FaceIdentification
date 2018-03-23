@@ -14,9 +14,9 @@ def Read(dict):
 
         data.append(dict + file)
         if 'pp' in dict:
-            label.append(0)
-        else:
             label.append(1)
+        else:
+            label.append(0)
 
     return data, label
 
@@ -67,28 +67,29 @@ def get_batch(image, label, image_w, image_h, batch_size, capacity):
 
     image_batch, label_batch = tf.train.batch([image, label],
                                               batch_size = batch_size,
-                                              num_threads=32,
+                                              num_threads=4,
                                               capacity= capacity)
 
     image_batch = tf.cast(image_batch, tf.float32)
+
     label_batch = tf.reshape(label_batch, [batch_size])
 
     return image_batch, label_batch
 
-#
-# def image_get_face(filepath):
-#     #使用opencv训练好的人脸检测数据集，分辨率高的图片识别率较高
-#     face_cascade = cv2.CascadeClassifier(
-#         r'D:\pyworkplace\FaceIdentification\opencv-master\data\haarcascades\haarcascade_frontalface_default.xml')
-#
-#     image = cv2.imread(filepath)
-#     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-#     faces = face_cascade.detectMultiScale(gray, 1.15, 5)
-#
-#     for (x, y, w, h) in faces:
-#         gray =  gray[x:x+w, y:y+h]   #返回人脸区域
-#         gray = cv2.resize(gray, [64, 64])
-#         return tf.Variable(image)
-#
-#     return None
 
+def image_get_face(filepath):
+    #使用opencv训练好的人脸检测数据集，分辨率高的图片识别率较高
+    face_cascade = cv2.CascadeClassifier(
+        r'D:\pyworkplace\FaceIdentification\opencv-master\data\haarcascades\haarcascade_frontalface_default.xml')
+
+    image = cv2.imread(filepath)
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    faces = face_cascade.detectMultiScale(gray, 1.15, 5)
+
+    for (x, y, w, h) in faces:
+        gray = image[x:x+w, y:y+h]   #返回人脸区域
+        gray = tf.image.resize_image_with_crop_or_pad(gray,64, 64)
+        gray = tf.cast(gray,tf.float32)
+        return tf.image.per_image_standardization(gray)
+
+    return None
