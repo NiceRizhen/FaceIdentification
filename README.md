@@ -1,2 +1,2 @@
 # FaceIdentification
-to identify the face between i and her
+to identify the face between 2 pers
